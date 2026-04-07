@@ -1,6 +1,19 @@
 import React from 'react'
+import { useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import { courseSchema } from '../Validation/CourseSchema';
+
+const schema = courseSchema;
 
 export default function Courses() {
+  const {register, handleSubmit, formState: { errors, isSubmitting }, } = useForm({resolver: yupResolver(schema),});
+
+  const courseFormOnSubmit = async (data) => {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    console.log(data);
+  }
+
   return (
     <div>
       <div className="page-heading">
@@ -14,20 +27,23 @@ export default function Courses() {
         <div className="col-md-4">
           <div className="bg-white p-4 rounded-4 shadow-sm border">
             <h5 className="fw-bold border-bottom pb-3 mb-4">Add Course</h5>
-            <form>
+            <form onSubmit={handleSubmit(courseFormOnSubmit)}>
               <div className="form-floating mb-3">
-                <input type="text" className="form-control bg-light" id="courseName" placeholder="Course Name" />
-                <label for="courseName">Name</label>
+                <input type="text" className="form-control bg-light" id="courseName" {...register('name')} placeholder="Course Name" />
+                <label htmlFor="courseName">Name</label>
+                {errors.name && <p className="form-error">{errors.name.message}</p>}
               </div>
 
               <div className="form-floating mb-3">
-                <input type="text" className="form-control bg-light" id="courseFee" placeholder="Course Fee" />
-                <label for="courseFee">Fee</label>
+                <input type="number" className="form-control bg-light" id="courseFee" {...register('fee')} placeholder="Course Fee" />
+                <label htmlFor="courseFee">Fee</label>
+                {errors.fee && <p className="form-error">{errors.fee.message}</p>}
               </div>
 
               <div className="form-floating mb-3">
-                <input type="text" className="form-control bg-light" id="courseDuration" placeholder="Course Duration" />
-                <label for="courseDuration">Duration (Month)</label>
+                <input type="number" className="form-control bg-light" id="courseDuration" {...register('duration')} placeholder="Course Duration" />
+                <label htmlFor="courseDuration">Duration (Month)</label>
+                {errors.duration && <p className="form-error">{errors.duration.message}</p>}
               </div>
 
               <button type="submit" className="btn px-4 py-2 rounded-3 w-100 shadow-sm gradient-bg text-white">
