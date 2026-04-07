@@ -1,7 +1,35 @@
+$primary-color: #9a55ff;
+$secondary-color: #da8cff;
+
+.gradient-bg {
+    background: linear-gradient(to right, $secondary-color, $primary-color) !important;
+}
+
 .student-card {
     .student-card-profile {
         width: 120px !important;
         height: 120px !important;
         object-fit: cover !important;
+    }
+}
+
+.page-heading {
+    margin: 0 0 1.5rem 0;
+    .page-title {
+        color: #343a40;
+        font-size: 1.125rem;
+        margin-bottom: 0;
+    }
+
+    .page-title-icon {
+        display: inline-block;
+        width: 36px;
+        height: 36px;
+        border-radius: 4px;
+        text-align: center;
+        box-shadow: 0px 3px 8.3px 0.7px rgba(163, 93, 255, 0.35);
+        font-size: 0.9375rem;
+        line-height: 36px;
+        background: linear-gradient(to right, $secondary-color, $primary-color) !important;
     }
 }
