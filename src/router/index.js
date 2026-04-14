@@ -4,18 +4,31 @@ import Login from "../pages/Login";
 import Students from "../pages/Students";
 import StudentForm from "../pages/StudentForm";
 import Courses from "../pages/Courses";
-import App from "../App";
+import GuestRoute from "./GuestRoute";
+import ProtectedRoute from "./ProtectedRoute";
+import MainAppLayout from "../layouts/MainAppLayout";
 
 
 export const router = createBrowserRouter([
     {
-        path: '/',
-        element: <App />,
-        children: [
-            {
-                index: true, // This handles the base '/' path
-                element: <Navigate to="/home" replace />, 
-            },
+        path: '',
+        element: <Navigate to="/home" replace />, 
+    },
+    {
+      element: <GuestRoute />,
+      children: [
+        {
+          path: '/login',
+          element: <Login />,
+        },
+      ],
+    },
+    {
+      element: <ProtectedRoute />,
+      children: [
+        {
+          element: <MainAppLayout />,
+          children: [
             {
                 path: '/home',
                 element: <Home />,
@@ -36,7 +49,9 @@ export const router = createBrowserRouter([
                 path: '/courses',
                 element: <Courses />,
             }
-        ]
+          ],
+        }
+      ]
     },
     
 ]);

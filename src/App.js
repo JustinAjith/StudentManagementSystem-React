@@ -1,14 +1,13 @@
-import { Outlet } from "react-router-dom";
-import Menu from "./layouts/Menu";
+import { RouterProvider } from 'react-router-dom';
+import { router } from './router';
+import { Provider } from 'react-redux';
+import store from './store/store';
 
 function App() {
   return (
-    <>
-      <Menu />
-      <main className="container mt-4">
-        <Outlet />
-      </main>
-    </>
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
   );
 }
 
