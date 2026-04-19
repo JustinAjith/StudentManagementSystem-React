@@ -1,12 +1,32 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { courseSchema } from '../Validation/CourseSchema';
+import { getAllCourses } from '../services/courseService';
 
 const schema = courseSchema;
 
 export default function Courses() {
   const {register, handleSubmit, formState: { errors, isSubmitting }, } = useForm({resolver: yupResolver(schema),});
+  const [loading, setLoading] = useState(false);
+  const [courses, setCourses] = useState([]);
+
+  useEffect(() => {
+    fetchInitialCourses();
+  }, []);
+
+  const fetchInitialCourses = async () => {
+    setLoading(true);
+    setCourses([]);
+    try {
+      const result = await getAllCourses()
+      setCourses(result.data)
+    } catch(error) {
+
+    } finally {
+      setLoading(false)
+    }
+  }
 
   const courseFormOnSubmit = async (data) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -64,14 +84,16 @@ export default function Courses() {
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td className="ps-4 py-3">
-                    <div className="fw-bold text-dark">Jane Doe</div>
-                  </td>
-                  <td className="py-3">$1,250.00</td>
-                  <td className="py-3">4 Months</td>
-                  <td className="pe-4 py-3 text-end">$1,250.00</td>
-                </tr>
+                {courses.map((course) => (
+                  <tr key={course.id}>
+                    <td className="ps-4 py-3">
+                      <div className="fw-bold text-dark">{course.name}</div>
+                    </td>
+                    <td className="py-3">${course.fee}</td>
+                    <td className="py-3">{course.duration} Months</td>
+                    <td className="pe-4 py-3 text-end">$1,250.00</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
