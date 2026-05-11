@@ -1,19 +1,22 @@
 import { yupResolver } from '@hookform/resolvers/yup'
-import React from 'react'
+import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { loginSchema } from '../Validation/loginSchema'
 import { useDispatch } from 'react-redux';
 import { loginFailure, loginStart, loginSuccess } from '../store/authSlice';
 import { login } from '../services/loginService';
+import Button from '../components/Button';
 
 const schema = loginSchema;
 
 export default function Login() {
   const {register, handleSubmit, formState: {errors, isSubmitted}} = useForm({ resolver: yupResolver(schema) });
+  const [isLoading, setIsLoading] = useState(false);
   const dispatch = useDispatch();
 
   const loginOnSubmit = async (data) => {
     dispatch(loginStart());
+    setIsLoading(true);
 
     try {
       const loginUser = await login(data);
@@ -21,6 +24,8 @@ export default function Login() {
     } catch(error) {
       dispatch(loginFailure(error.response?.data?.message || 'Something went wrong'));
       console.error('Failed to create user:', error);
+    } finally {
+      setIsLoading(false);
     }
   }
 
@@ -43,9 +48,10 @@ export default function Login() {
               <label htmlFor="coursePassword">Password</label>
               {errors.password && <p className="form-error">{errors.password.message}</p>}
             </div>
-            <button type="submit" className="btn px-4 py-2 rounded-3 w-100 shadow-sm gradient-bg text-white">
+            {/* <button type="submit" className="btn px-4 py-2 rounded-3 w-100 shadow-sm gradient-bg text-white">
               Submit
-            </button>
+            </button> */}
+            <Button label={isLoading ? 'Loading...' : 'Login'} isDisabled={isLoading ? true : false} />
           </form>
         </div>
       </div>

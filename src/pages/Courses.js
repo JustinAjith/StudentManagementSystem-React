@@ -2,14 +2,17 @@ import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { courseSchema } from '../Validation/CourseSchema';
-import { getAllCourses } from '../services/courseService';
+import { getAllCourses, createCourse, deleteCourse } from '../services/courseService';
+import Button from '../components/Button';
 
 const schema = courseSchema;
 
 export default function Courses() {
-  const {register, handleSubmit, formState: { errors, isSubmitting }, } = useForm({resolver: yupResolver(schema),});
+  const {register, handleSubmit, reset, formState: { errors, isSubmitting }, } = useForm({resolver: yupResolver(schema),});
   const [loading, setLoading] = useState(false);
+  const [buttonLoading, setButtonLoading] = useState(false);
   const [courses, setCourses] = useState([]);
+  const [isEdit, setIsEdit] = useState(false);
 
   useEffect(() => {
     fetchInitialCourses();
@@ -29,9 +32,33 @@ export default function Courses() {
   }
 
   const courseFormOnSubmit = async (data) => {
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    setButtonLoading(true);
+    setIsEdit(false)
+    try {
+      const result = await createCourse(data)
+      fetchInitialCourses()
+    } catch(error) {
 
-    console.log(data);
+    } finally {
+      setButtonLoading(false);
+      reset()
+      console.log('Work')
+    }
+  }
+
+  const setEditData = (course) => {
+    setIsEdit(true)
+    reset(course)
+  }
+
+  const deleteCourseData = async (course) => {
+    try {
+      console.log(course)
+      const result = await deleteCourse(course.id)
+      fetchInitialCourses()
+    } catch(error) {
+
+    }
   }
 
   return (
@@ -46,7 +73,7 @@ export default function Courses() {
       <div className="row">
         <div className="col-md-4">
           <div className="bg-white p-4 rounded-4 shadow-sm border">
-            <h5 className="fw-bold border-bottom pb-3 mb-4">Add Course</h5>
+            <h5 className="fw-bold border-bottom pb-3 mb-4">{isEdit ? 'Edit' : 'Add'} Course</h5>
             <form onSubmit={handleSubmit(courseFormOnSubmit)}>
               <div className="form-floating mb-3">
                 <input type="text" className="form-control bg-light" id="courseName" {...register('name')} placeholder="Course Name" />
@@ -66,9 +93,10 @@ export default function Courses() {
                 {errors.duration && <p className="form-error">{errors.duration.message}</p>}
               </div>
 
-              <button type="submit" className="btn px-4 py-2 rounded-3 w-100 shadow-sm gradient-bg text-white">
+              {/* <button type="submit" className="btn px-4 py-2 rounded-3 w-100 shadow-sm gradient-bg text-white">
                 Submit
-              </button>
+              </button> */}
+              <Button label={buttonLoading ? 'Loading...' : 'Submit'} isDisabled={buttonLoading ? true : false} />
             </form>
           </div>
         </div>
@@ -91,7 +119,10 @@ export default function Courses() {
                     </td>
                     <td className="py-3">${course.fee}</td>
                     <td className="py-3">{course.duration} Months</td>
-                    <td className="pe-4 py-3 text-end">$1,250.00</td>
+                    <td className="pe-4 py-3 text-end">
+                      <i className="fa fa-trash-o me-2 fs-5 text-danger" role="button" aria-hidden="true" onClick={() => deleteCourseData(course)}></i>
+                      <i className="fa fa-pencil fs-5 text-info" role="button" aria-hidden="true" onClick={() => setEditData(course)}></i>
+                    </td>
                   </tr>
                 ))}
               </tbody>
